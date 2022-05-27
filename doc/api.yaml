@@ -1,0 +1,431 @@
+openapi: 3.0.0
+info:
+  title: Отличный сервис
+  description: Описание к отличному сервису
+  version: 2.2.7
+
+servers:
+  - url: /
+
+components:
+  schemas:
+    Client:
+      type: object
+      properties:
+        id:
+          type: string
+        fullName:
+          type: string
+        address:
+          type: string
+        numberPhone:
+          type: number
+        bonusCard:
+          type: boolean
+    Orders:
+      properties:
+        id:
+          type: string
+        orderNumber:
+          type: integer
+        numbers:
+          type: integer
+        clientId:
+          type: string
+        productsId:
+          type: string
+    Products:
+      properties:
+        id:
+          type: string
+        name:
+          type: string  
+        price:
+          type: number
+        ageOfIssue:
+          type: integer
+        lifeTime:
+          type: integer
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  
+paths:
+  /clients:
+    get:
+      tags:
+        - Clients
+      summary:  Вернуть всех клиентов в системе
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items: 
+                  $ref: '#/components/schemas/Client'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      tags:
+        - Clients
+      summary:  Cоздаст нового клиента
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                fullName:
+                  type: string
+                address:
+                  type: string
+                numberPhone:
+                  type: number
+                bonusCard:
+                  type: boolean
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Client"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /clients/{clientId}:
+    parameters:
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Clients
+      summary: Вернуть данные клиента с заданным clientId
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    put:
+      tags:
+        - Clients
+      summary: Обновить данные клиента с заданным clientId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                fullName:
+                  type: string
+                address:
+                  type: string
+                numberPhone:
+                  type: number
+                bonusCard:
+                  type: boolean
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - Clients
+      summary: Удалить клиента с заданным clientId
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'      
+  /clients/{clientId}/order:
+    parameters:
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Clients
+      summary: Вернуть все заказы связанные с клиентом c clientId
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items: 
+                  $ref: '#/components/schemas/Orders'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /orders:
+    get:
+      tags:
+        - Orders
+      summary: Вернуть все заказы в системе
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items: 
+                  $ref: '#/components/schemas/Orders'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      tags:
+        - Orders
+      summary:  Создать заказ и привязать его к существующему клиенту
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                orderNumber:
+                  type: integer
+                numbers:
+                  type: integer
+                clientId:
+                  type: string
+                productsId:
+                  type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Orders"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /orders/{orderId}:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Orders
+      summary: Вернуть заказ с заданным orderId
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Orders"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    put:
+      tags:
+        - Orders
+      summary: Обновить заказ с заданным orderId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                fullName:
+                  type: string
+                address:
+                  type: string
+                numberPhone:
+                  type: number
+                bonusCard:
+                  type: boolean
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Orders"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - Orders
+      summary: Удалить заказ с заданным orderId
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Orders"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'   
+  /orders/{orderId}/products:
+    parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Orders
+      summary: Вернуть все товары по заданному orderId
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items: 
+                  $ref: '#/components/schemas/Products'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /products:
+    get:
+      tags:
+        - Products
+      summary: Получить все товары в системе
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items: 
+                  $ref: '#/components/schemas/Products'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      tags:
+        - Products
+      summary:  Добавить товар
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                name:
+                  type: string  
+                price:
+                  type: number
+                ageOfIssue:
+                  type: integer
+                lifeTime:
+                  type: integer
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Products"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /products/{productsId}:
+    parameters:
+      - name: productsId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Products
+      summary: Вернуть товар с заданным productsId
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Products"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+          
+          
+    put:
+      tags:
+        - Products
+      summary: Обновить товар с заданным productsId
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                name:
+                  type: string  
+                price:
+                  type: number
+                ageOfIssue:
+                  type: integer
+                lifeTime:
+                  type: integer
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Products"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - Products
+      summary: Удалить продукт с заданным productsId
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Products"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'   
