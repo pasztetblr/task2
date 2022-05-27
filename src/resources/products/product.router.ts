@@ -1,19 +1,22 @@
-const { StatusCodes } = require('http-status-codes');
-const router = require('express').Router();
-const Product = require('./product.model');
+import { Request, Response, Router } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import Product from './product.model';
 
-const productsService = require('./product.service');
-const catchErrors = require('../../common/catchErrors');
+import productsService from './product.service';
+import catchErrors from '../../common/catchErrors';
+
+const router = Router();
 
 router.route('/').get(
-  catchErrors(async (req, res) => {
-    const products = await productsService.getAll();
-    res.json(products.map(Product.toResponse));
-  })
+  catchErrors(async (_req: Request, res: Response) => {
+    const users = await productsService.getAll();
+
+    res.json(users.map(Product.toResponse));
+  }),
 );
 
 router.route('/').post(
-  catchErrors(async (req, res) => {
+  catchErrors(async (req: Request, res: Response) => {
     const { name, price, ageOfIssue, lifeTime } = req.body;
     const product = await productsService.createProduct({ name, price, ageOfIssue, lifeTime });
 
@@ -24,14 +27,13 @@ router.route('/').post(
         .status(StatusCodes.BAD_REQUEST)
         .json({ code: 'PRODUCT_NOT_CREATE', msg: 'Product not create' });
     }
-  })
+  }),
 );
 
 router.route('/:id').get(
-  catchErrors(async (req, res) => {
+  catchErrors(async (req: Request, res: Response) => {
     const { id } = req.params;
-
-    const product = await productsService.getById(id);
+    const product = await productsService.getById(id || '');
 
     if (product) {
       res.json(Product.toResponse(product));
@@ -40,15 +42,21 @@ router.route('/:id').get(
         .status(StatusCodes.NOT_FOUND)
         .json({ code: 'PRODUCT_NOT_FOUND', msg: 'Product not found' });
     }
-  })
+  }),
 );
 
 router.route('/:id').put(
-  catchErrors(async (req, res) => {
+  catchErrors(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { fullName, address, numberPhone, bonusCard } = req.body;
+    const { name, price, ageOfIssue, lifeTime } = req.body;
 
-    const product = await productsService.updateById({ id, fullName, address, numberPhone, bonusCard });
+    const product = await productsService.updateById({
+      id: id || '',
+      name,
+      price,
+      ageOfIssue,
+      lifeTime,
+    });
 
     if (product) {
       res.status(StatusCodes.OK).json(Product.toResponse(product));
@@ -57,14 +65,14 @@ router.route('/:id').put(
         .status(StatusCodes.NOT_FOUND)
         .json({ code: 'PRODUCT_NOT_FOUND', msg: 'Product not found' });
     }
-  })
+  }),
 );
 
 router.route('/:id').delete(
-  catchErrors(async (req, res) => {
+  catchErrors(async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    const product = await productsService.deleteById(id);
+    const product = await productsService.deleteById(id || '');
 
     if (!product) {
       return res
@@ -75,7 +83,7 @@ router.route('/:id').delete(
     return res
       .status(StatusCodes.NO_CONTENT)
       .json({ code: 'PRODUCT_DELETED', msg: 'The product has been deleted' });
-  })
+  }),
 );
 
-module.exports = router;
+export default router;

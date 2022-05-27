@@ -1,11 +1,10 @@
-const express = require('express');
-const swaggerUI = require('swagger-ui-express');
-const path = require('path');
-const YAML = require('yamljs');
-
-const clientRouter = require('./resources/clients/client.router');
-const productRouter = require('./resources/products/product.router');
-const orderRouter = require('./resources/orders/order.router');
+import express from 'express';
+import swaggerUI from 'swagger-ui-express';
+import path from 'path';
+import YAML from 'yamljs';
+import clientRouter from './resources/clients/client.router';
+import productRouter from './resources/products/product.router';
+import orderRouter from './resources/orders/order.router';
 
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
@@ -26,4 +25,4 @@ app.use('/clients', clientRouter);
 app.use('/products', productRouter);
 app.use('/orders', orderRouter);
 
-module.exports = app;
+export default app;

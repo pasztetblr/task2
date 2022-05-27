@@ -1,19 +1,22 @@
-const { StatusCodes } = require('http-status-codes');
-const router = require('express').Router();
-const Client = require('./client.model');
+import { Request, Response, Router } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import Client from './client.model';
 
-const clientsService = require('./client.service');
-const catchErrors = require('../../common/catchErrors');
+import clientsService from './client.service';
+import catchErrors from '../../common/catchErrors';
+
+const router = Router();
 
 router.route('/').get(
-  catchErrors(async (req, res) => {
-    const clients = await clientsService.getAll();
-    res.json(clients.map(Client.toResponse));
-  })
+  catchErrors(async (_req: Request, res: Response) => {
+    const users = await clientsService.getAll();
+
+    res.json(users.map(Client.toResponse));
+  }),
 );
 
 router.route('/').post(
-  catchErrors(async (req, res) => {
+  catchErrors(async (req: Request, res: Response) => {
     const { fullName, address, numberPhone, bonusCard } = req.body;
     const client = await clientsService.createClient({ fullName, address, numberPhone, bonusCard });
 
@@ -24,47 +27,48 @@ router.route('/').post(
         .status(StatusCodes.BAD_REQUEST)
         .json({ code: 'CLIENT_NOT_CREATE', msg: 'Client not create' });
     }
-  })
+  }),
 );
 
 router.route('/:id').get(
-  catchErrors(async (req, res) => {
+  catchErrors(async (req: Request, res: Response) => {
     const { id } = req.params;
-
-    const client = await clientsService.getById(id);
+    const client = await clientsService.getById(id || '');
 
     if (client) {
       res.json(Client.toResponse(client));
     } else {
-      res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ code: 'CLIENT_NOT_FOUND', msg: 'Client not found' });
+      res.status(StatusCodes.NOT_FOUND).json({ code: 'CLIENT_NOT_FOUND', msg: 'Client not found' });
     }
-  })
+  }),
 );
 
 router.route('/:id').put(
-  catchErrors(async (req, res) => {
+  catchErrors(async (req: Request, res: Response) => {
     const { id } = req.params;
     const { fullName, address, numberPhone, bonusCard } = req.body;
 
-    const client = await clientsService.updateById({ id, fullName, address, numberPhone, bonusCard });
+    const client = await clientsService.updateById({
+      id: id || '',
+      fullName,
+      address,
+      numberPhone,
+      bonusCard,
+    });
 
     if (client) {
       res.status(StatusCodes.OK).json(Client.toResponse(client));
     } else {
-      res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ code: 'CLIENT_NOT_FOUND', msg: 'Client not found' });
+      res.status(StatusCodes.NOT_FOUND).json({ code: 'CLIENT_NOT_FOUND', msg: 'Client not found' });
     }
-  })
+  }),
 );
 
 router.route('/:id').delete(
-  catchErrors(async (req, res) => {
+  catchErrors(async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    const client = await clientsService.deleteById(id);
+    const client = await clientsService.deleteById(id || '');
 
     if (!client) {
       return res
@@ -75,7 +79,7 @@ router.route('/:id').delete(
     return res
       .status(StatusCodes.NO_CONTENT)
       .json({ code: 'CLIENT_DELETED', msg: 'The client has been deleted' });
-  })
+  }),
 );
 
-module.exports = router;
+export default router;
