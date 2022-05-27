@@ -6,6 +6,8 @@ import clientRouter from './resources/clients/client.router';
 import productRouter from './resources/products/product.router';
 import orderRouter from './resources/orders/order.router';
 
+import { logging, errorHandling } from './middlewares';
+
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 
@@ -21,8 +23,10 @@ app.use('/', (req, res, next) => {
   next();
 });
 
+app.use(logging);
 app.use('/clients', clientRouter);
 app.use('/products', productRouter);
 app.use('/orders', orderRouter);
+app.use(errorHandling);
 
 export default app;
